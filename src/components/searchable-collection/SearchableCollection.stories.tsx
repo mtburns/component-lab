@@ -18,13 +18,13 @@ const meta = {
 
 **Problem:** Make a small set of content easy to explore without building a one-off search UI for every page.
 
-**Approach:** Pass items, stable keys, searchable text, optional category configuration, and a render function. The collection manages its own query and selected category. Results are derived from props on each render; they are not duplicated in state.
+**Approach:** Pass items, stable keys, searchable text, optional category configuration, and a render function. The collection manages its own query and selected categories. Results are derived from props on each render; they are not duplicated in state.
 
-**Tradeoffs:** One category at a time; all search terms must match; accents and case are ignored. This first version assumes a small, already-loaded dataset. It does not provide remote search, pagination, URL state, or virtualization.
+**Tradeoffs:** Single-category selection by default, with optional multi-select. Multi-select matches any selected category; every search term must still match. Partial words match, and accents and case are ignored. This first version assumes a small, already-loaded dataset. It does not provide remote search, pagination, URL state, or virtualization.
 
-**Accessibility by design:** Visible input label, native radio group, a polite result count, list semantics, visible keyboard focus, and focus returned to search when filters are cleared. The consumer owns accessible card markup. Automated checks are useful evidence, not a WCAG conformance claim.
+**Accessibility by design:** Visible input label, native radio or checkbox group, a polite result count, list semantics, visible keyboard focus, and focus returned to search when filters are cleared. The consumer owns accessible card markup. Automated checks are useful evidence, not a WCAG conformance claim.
 
-**AI collaboration:** ChatGPT proposed the API, implementation, stories, and tests. Travis chose the searchable collection, separate repository, stack, and review workflow. Implementation review, screen-reader checks, and approval for main by Travis are pending. This repository has no deployment destination. See AI_USAGE.md and docs/REVIEW.md in the repository.
+**AI collaboration:** ChatGPT drafted the initial API, implementation, stories, and tests. Travis chose the component, stack, separate repository, and review workflow. During review, he confirmed the flexible data and rendering approach, extended the filament example with hex color values and visual swatches, and accepted all-term search with partial matching. He then requested a multi-select example; ChatGPT drafted the optional checkbox mode, story, and behavior tests. AI helped accelerate drafting and review; Travis reviews and adjusts the code. Implementation review is ongoing; screen-reader checks and approval for main remain pending. This repository has no deployment destination. See AI_USAGE.md and docs/REVIEW.md for details.
 
 Try the stories below, including an unrelated product data model using the same collection.`,
       },
@@ -53,6 +53,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const MultiSelectLabels: Story = {
+  args: {
+    title: 'A few interests. One collection.',
+    filter: { ...resourceFilter, selection: 'multiple' },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Select more than one label using native checkboxes. An item can match any selected label, while every search term must still match. With no labels selected, all items are eligible. Tab moves between checkboxes; Space toggles each one. Clear filters resets both search and labels and returns focus to search.',
+      },
+    },
+  },
+};
+
 export const SearchWithoutCategories: Story = {
   args: { filter: undefined, title: 'Just search.' },
   parameters: {
@@ -80,16 +95,30 @@ interface PrintMaterial {
   name: string;
   material: string;
   color: string;
+  swatch: string;
 }
 
 const materials: readonly PrintMaterial[] = [
-  { sku: 'pla-violet', name: 'Everyday PLA', material: 'PLA', color: 'Violet' },
-  { sku: 'pla-slate', name: 'Matte PLA', material: 'PLA', color: 'Slate gray' },
+  {
+    sku: 'pla-violet',
+    name: 'Everyday PLA',
+    material: 'PLA',
+    color: 'Violet',
+    swatch: '#9b5de5',
+  },
+  {
+    sku: 'pla-slate',
+    name: 'Matte PLA',
+    material: 'PLA',
+    color: 'Slate gray',
+    swatch: '#6c757d',
+  },
   {
     sku: 'petg-amber',
     name: 'Workshop PETG',
     material: 'PETG',
     color: 'Amber',
+    swatch: '#ffc649',
   },
 ];
 
@@ -118,6 +147,11 @@ export const DifferentDataModel: Story = {
           <p className="mt-2 text-zinc-600">
             {material.color} / {material.material}
           </p>
+          <div
+            aria-hidden="true"
+            className="mt-4 h-6 w-full rounded-md border border-zinc-300"
+            style={{ backgroundColor: material.swatch }}
+          />
         </article>
       )}
     />

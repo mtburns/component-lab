@@ -2,7 +2,7 @@
 
 Reusable frontend components by Travis Burns, with interactive examples and the reasoning behind the code. React, TypeScript, Tailwind CSS, and Storybook.
 
-**Status:** first working draft. Travis selected the direction and stack; his implementation review and approval for `main` are pending. See [AI usage](AI_USAGE.md) and the [review checklist](docs/REVIEW.md).
+**Status:** first working draft. Travis selected the direction and stack; his implementation review is ongoing and approval for `main` is pending. See [AI usage](AI_USAGE.md) and the [review checklist](docs/REVIEW.md).
 
 **CI only.** This repository has no production or staging server and must never deploy to the portfolio's hosting. `main` holds reviewed examples; it is not a deployment trigger. Portfolio integration is a separate, manual change in the portfolio repository.
 
@@ -15,7 +15,7 @@ npm ci
 npm run storybook
 ```
 
-Storybook opens at `http://localhost:6006`. The component's Docs page explains its purpose, decisions, limitations, and AI assistance. The five stories show the default collection, search without categories, empty data, a single item, and an unrelated filament inventory using the same component.
+Storybook opens at `http://localhost:6006`. The component's Docs page explains its purpose, decisions, limitations, and AI assistance. The six stories show the default collection, optional multi-select labels, search without categories, empty data, a single item, and an unrelated filament inventory with color swatches using the same component.
 
 For the standalone visual demo:
 
@@ -36,7 +36,7 @@ npm run build-storybook
 
 `npm run build` checks TypeScript and produces the demo in `dist/`. Storybook builds separately into `storybook-static/`. `npm run format:check` checks formatting; `npm run format` applies it.
 
-The component behavior tests cover search, combined filtering, empty results, clearing/focus, keyboard operation, multiple instances, changed props, and reuse with another data model. An axe test checks structural accessibility in jsdom; it does **not** check color contrast. Passing it is not a conformance certification. `npm test` also exercises the CI-only guard against attempted deployment steps, extra workflows, elevated permissions, secret references, and npm publishing/deployment hooks.
+The component behavior tests cover search, combined filtering, multi-select OR behavior, empty results, clearing/focus, keyboard operation, multiple instances, changed props, and reuse with another data model. An axe test checks structural accessibility in jsdom; it does **not** check color contrast. Passing it is not a conformance certification. `npm test` also exercises the CI-only guard against attempted deployment steps, extra workflows, elevated permissions, secret references, and npm publishing/deployment hooks.
 
 ## Start reading here
 

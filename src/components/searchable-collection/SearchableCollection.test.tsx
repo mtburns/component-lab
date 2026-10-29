@@ -32,23 +32,36 @@ const props: SearchableCollectionProps<Item> = {
   },
   renderItem: (item) => <h3>{item.name}</h3>,
 };
+const multipleProps: SearchableCollectionProps<Item> = {
+  ...props,
+  filter: { ...props.filter!, selection: 'multiple' },
+};
 
 describe('SearchableCollection user behavior', () => {
-  it('has no axe-detected structural violations in the test document', async () => {
-    const { container } = render(
-      <main>
-        <h1>Component test</h1>
-        <SearchableCollection {...props} />
-      </main>,
-    );
-    // jsdom has no rendered layout. Contrast must be checked in a real browser.
-    const results = await axe.run(container, {
-      rules: { 'color-contrast': { enabled: false } },
-    });
-    expect(
-      results.violations.map(({ id, nodes }) => ({ id, count: nodes.length })),
-    ).toEqual([]);
-  });
+  it.each(['single', 'multiple'] as const)(
+    'has no axe-detected structural violations in %s mode',
+    async (selection) => {
+      const { container } = render(
+        <main>
+          <h1>Component test</h1>
+          <SearchableCollection
+            {...props}
+            filter={{ ...props.filter!, selection }}
+          />
+        </main>,
+      );
+      // jsdom has no rendered layout. Contrast must be checked in a real browser.
+      const results = await axe.run(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      });
+      expect(
+        results.violations.map(({ id, nodes }) => ({
+          id,
+          count: nodes.length,
+        })),
+      ).toEqual([]);
+    },
+  );
 
   it('supports native radio navigation from the keyboard', async () => {
     const user = userEvent.setup();
@@ -200,5 +213,174 @@ describe('SearchableCollection user behavior', () => {
     await user.type(screen.getByRole('searchbox'), 'purple');
     expect(screen.getAllByRole('listitem')).toHaveLength(1);
     expect(screen.getByText('Purple')).toBeVisible();
+  });
+
+  it('matches any selected label and restores all items when the last is unchecked', async () => {
+    const user = userEvent.setup();
+    render(<SearchableCollection {...multipleProps} />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(
+      screen.queryByRole('checkbox', { name: 'All' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+    expect(screen.getByRole('status')).toHaveTextContent('2 / 3 items shown');
+    expect(screen.getByRole('checkbox', { name: 'Code' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Design' })).toBeChecked();
+    expect(
+      screen.queryByRole('heading', { name: 'Keyboard forms' }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', { name: 'Component color tokens' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    ).toBeDisabled();
+  });
+
+  it('requires every search term within the union of selected labels', async () => {
+    const user = userEvent.setup();
+    render(<SearchableCollection {...multipleProps} />);
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Access' }));
+    await user.type(screen.getByRole('searchbox'), 'comp caf');
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', { name: 'Café component patterns' }),
+    ).toBeVisible();
+    await user.type(screen.getByRole('searchbox'), ' missing');
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('0 / 3 items shown');
+    await user.clear(screen.getByRole('searchbox'));
+    await user.type(screen.getByRole('searchbox'), 'color');
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    expect(
+      screen.getByRole('heading', { name: 'Component color tokens' }),
+    ).toBeVisible();
+  });
+
+  it('clears query and every checkbox and restores focus to search', async () => {
+    const user = userEvent.setup();
+    render(<SearchableCollection {...multipleProps} />);
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    await user.type(screen.getByRole('searchbox'), 'component');
+    await user.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    for (const checkbox of screen.getAllByRole('checkbox')) {
+      expect(checkbox).not.toBeChecked();
+    }
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    ).toBeDisabled();
+  });
+
+  it('supports Tab and Space for independent checkbox selections', async () => {
+    const user = userEvent.setup();
+    render(<SearchableCollection {...multipleProps} />);
+    expect(
+      screen.getByRole('group', { name: 'Topic' }),
+    ).toHaveAccessibleDescription(
+      'Choose any combination. No labels selected shows all items.',
+    );
+    await user.tab();
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole('checkbox', { name: 'Code' })).toHaveFocus();
+    await user.keyboard('[Space]');
+    await user.tab();
+    expect(screen.getByRole('checkbox', { name: 'Access' })).toHaveFocus();
+    await user.keyboard('[Space]');
+    expect(screen.getByRole('checkbox', { name: 'Code' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Access' })).toBeChecked();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+    await user.keyboard('[Space]');
+    expect(screen.getByRole('checkbox', { name: 'Access' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Access' })).toHaveFocus();
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+  });
+
+  it('ignores removed labels while retaining other valid selections', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<SearchableCollection {...multipleProps} />);
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    rerender(
+      <SearchableCollection
+        {...multipleProps}
+        filter={{
+          ...multipleProps.filter!,
+          options: [{ value: 'Design', label: 'Design' }],
+        }}
+      />,
+    );
+    expect(screen.getByRole('checkbox', { name: 'Design' })).toBeChecked();
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', { name: 'Component color tokens' }),
+    ).toBeVisible();
+    rerender(
+      <SearchableCollection
+        {...multipleProps}
+        filter={{
+          ...multipleProps.filter!,
+          options: [{ value: 'Access', label: 'Access' }],
+        }}
+      />,
+    );
+    expect(screen.getByRole('checkbox', { name: 'Access' })).not.toBeChecked();
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(
+      screen.getByRole('button', { name: 'Clear filters' }),
+    ).toBeDisabled();
+  });
+
+  it('uses only the first valid selection if changed to single-select mode', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<SearchableCollection {...multipleProps} />);
+    await user.click(screen.getByRole('checkbox', { name: 'Design' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Code' }));
+    rerender(<SearchableCollection {...props} />);
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Design' })).toBeChecked();
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', { name: 'Component color tokens' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('radio', { name: 'All' }));
+    rerender(<SearchableCollection {...multipleProps} />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    for (const checkbox of screen.getAllByRole('checkbox')) {
+      expect(checkbox).not.toBeChecked();
+    }
+  });
+
+  it('keeps multi-select instances independent', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <SearchableCollection {...multipleProps} title="First" />
+        <SearchableCollection {...multipleProps} title="Second" />
+      </>,
+    );
+    const first = within(screen.getByRole('region', { name: 'First' }));
+    const second = within(screen.getByRole('region', { name: 'Second' }));
+    await user.click(first.getByRole('checkbox', { name: 'Code' }));
+    await user.click(first.getByRole('checkbox', { name: 'Design' }));
+    await user.click(second.getByRole('checkbox', { name: 'Access' }));
+    expect(first.getAllByRole('listitem')).toHaveLength(2);
+    expect(second.getAllByRole('listitem')).toHaveLength(1);
+    expect(first.getByRole('checkbox', { name: 'Access' })).not.toBeChecked();
+    expect(second.getByRole('checkbox', { name: 'Code' })).not.toBeChecked();
   });
 });

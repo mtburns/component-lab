@@ -9,7 +9,7 @@ This is new demonstration work. It does not reproduce a former client's propriet
 ## The first slice
 
 - Immediate text search across fields selected by the consumer.
-- Optional single-category filtering, combined with the query.
+- Optional category filtering: single selection by default, or multiple selection via `filter.selection`, combined with the query.
 - Case- and accent-insensitive matching. Every space-separated term must match somewhere in the searchable text.
 - Result count, empty state, and clear action.
 - A grid with consumer-provided card content.
@@ -32,9 +32,22 @@ We can review whether these accessors are the right level of flexibility. They d
 
 ## State and behavior
 
-The component stores only query and category. Visible results are derived from current props, so incoming data changes do not require an effect to synchronize another array. There is no memoization yet: a straightforward pass is appropriate for the small demonstration dataset. We should measure before optimizing.
+The component stores only the query and selected category values. Visible results are derived from current props, so incoming data changes do not require an effect to synchronize another array. There is no memoization yet: a straightforward pass is appropriate for the small demonstration dataset. We should measure before optimizing.
 
-Category matching is exact; query matching is a literal substring test per term. The implementation normalizes case and diacritics, not spelling or synonyms. It preserves original item order. If a selected option disappears from configuration, it behaves as “all.”
+Category matching is exact. Single-select uses native radio inputs; `filter.selection: 'multiple'` uses native checkboxes and matches any selected category (OR). Search still requires every term (AND). Query matching is a literal substring test per term. The implementation normalizes case and diacritics, not spelling or synonyms. It preserves original item order. Removed options do not participate in filtering. Other valid selections stay active; no active selections means “all.” If a consumer changes multiple selection to single selection, only the first valid selection is active. The multi-select UI explains that no labels selected shows all items, rather than adding an ambiguous “All” checkbox.
+
+## Enable multi-select
+
+```tsx
+filter={{
+  label: 'Topic',
+  selection: 'multiple',
+  options: topicOptions,
+  getValue: (item) => item.topic,
+}}
+```
+
+The existing `filter` API remains valid; omitting `selection` keeps single-select behavior. Storybook's **Multi Select Labels** story demonstrates the optional mode with the same resource data and card renderer.
 
 ## Presentation and reuse
 
@@ -45,7 +58,7 @@ The second data-model story uses fictional print materials with numeric/string-i
 ## Accessibility decisions
 
 - Semantic section with an associated h2; consumers should place it in a compatible heading hierarchy and provide h3 item headings where appropriate.
-- Visible search label, native search input, and native radio inputs grouped by fieldset/legend.
+- Visible search label, native search input, and native radio or checkbox inputs grouped by fieldset/legend. Multi-select has associated instructions and a decorative checkmark alongside its selected styling. Radios use arrow keys within the group; checkboxes use Tab and Space.
 - A polite status region announces counts without moving focus to the results.
 - Clear resets both controls and focuses search; result changes do not otherwise steal focus.
 - React `useId` separates labels and radio-group names for multiple instances.
@@ -56,7 +69,7 @@ These are design decisions, not proof of comprehensive WCAG conformance. Verify 
 
 ## Deliberate limits
 
-This first version does not fetch data, manage loading/error requests, paginate, virtualize long lists, synchronize URL state, support multiple simultaneous categories, or expose controlled state. It is English-first sample UI. Large datasets, localization, and external state should be requirements-led extensions, not speculative additions.
+This first version does not fetch data, manage loading/error requests, paginate, virtualize long lists, synchronize URL state, or expose controlled state. Multiple selection is supported within one category dimension; each item still has one category value, so multi-valued tags and multiple independent filter groups are outside this slice. It is English-first sample UI. Large datasets, localization, and external state should be requirements-led extensions, not speculative additions.
 
 ## Next.js integration later
 

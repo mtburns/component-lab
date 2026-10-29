@@ -25,6 +25,34 @@ Desktop Chromium preview:
 
 Browser checks are limited to the documented interactions. No claim is made that all browsers, widths, assistive technologies, or WCAG criteria were verified.
 
+## Multi-select update — October 29, 2026
+
+Automated verification after adding `filter.selection: 'multiple'`:
+
+- 20 component tests passed, including the original single-select behavior, structural axe scans in both modes (contrast excluded in jsdom), OR matching across labels combined with all-term search, unchecking the last selection, reset/focus, Tab/Space operation, removed options, selection-mode changes, and instance isolation.
+- 10 CI-only policy tests passed; `npm run check:ci-policy` passed separately.
+- TypeScript and standalone Vite build passed. Storybook static build passed using the same executor-only OS-interface fallback described above.
+- Formatting check passed.
+
+Browser verification in Chromium on the updated Storybook Docs page:
+
+- All six stories rendered, including Multi Select Labels and the filament inventory.
+- Selecting Design and Development showed 4 / 6 resources. Adding the query `component` narrowed this to 1 / 6 and the expected Think in components card.
+- Clear restored 6 / 6 and returned focus to the empty search input.
+- Tab from search moved to the first checkbox when Clear was disabled. Space selected Design; Tab and Space added Development while keeping Design selected, returning 4 / 6.
+
+Travis subsequently reported successful local interaction, keyboard, responsive, and zoom checks, recorded below. Remaining implementation review, screen-reader testing, contrast verification, and reduced-motion checks are still outstanding. Earlier desktop/mobile scan results above describe the first slice, not a new browser accessibility scan of the multi-select update.
+
+## Review decisions reported by Travis
+
+- Accepted the generic data/accessor/render-function separation for flexibility and portability.
+- Added hex color values and swatches to the filament card example without changing the collection API.
+- Accepted all-term substring search, including partial input such as `violet PL`.
+- Requested an additional multi-select example, then confirmed the local behavior: selected categories combine their results, removing selections updates the results, and clearing the final selection restores all eligible items.
+- Confirmed local keyboard navigation looked good after checking Tab/Shift+Tab, Space to toggle independent selections, visible focus, and Clear returning focus to search.
+- Considered adding arrow navigation to multi-select labels, then chose to retain native checkbox behavior. Single-select keeps native radio arrow navigation.
+- Confirmed responsive layout and 200% browser zoom looked good after the requested 320px and zoom checks. These are user-reported local checks, not a comprehensive browser or assistive-technology audit.
+
 ## Pending review by Travis
 
 - [ ] Walk through the typed API and explain the component's responsibilities.
@@ -32,10 +60,11 @@ Browser checks are limited to the documented interactions. No claim is made that
 - [ ] Decide whether the card design and visual language feel like your work.
 - [ ] Review each test and identify missing user behavior.
 - [ ] Open every Storybook story and inspect its Docs page.
-- [ ] Check keyboard focus visibility and tab order manually.
+- [x] Check keyboard focus visibility and tab order manually in the local example.
 - [ ] Check screen-reader labels, group selection, and count announcements.
-- [ ] Verify color contrast, 320px reflow, browser zoom, and reduced motion.
-- [ ] Record actual edits/decisions in AI_USAGE.md.
+- [x] Check 320px reflow and 200% browser zoom locally.
+- [ ] Verify color contrast and reduced motion.
+- [x] Record the reported edits, decisions, and local checks in AI_USAGE.md.
 - [ ] Review the CI-only guard and configure required GitHub checks on `develop` and `main` once available.
 - [ ] Approve a reviewed version before portfolio integration or presenting it as production-ready work.
 
