@@ -1,6 +1,6 @@
 # AI collaboration record
 
-Dated entries preserve what was known at each checkpoint. The November 4 entry updates earlier pending testing and branch-protection statuses; final implementation approval remains separate.
+Dated entries preserve what was known at each checkpoint. The final November 4 review entry supersedes earlier pending statuses and records Travis's source review and completed count-announcement recheck. The merge to `main` remains a separate action.
 
 ## Working agreement
 
@@ -56,9 +56,16 @@ ChatGPT updated the workflow for `develop`/`main`, removed credential persistenc
 - After reviewing NVDA's "slash" announcement, Travis requested "out of" wording. ChatGPT preserved the visible slash count, hid that visual representation from assistive technology, and added a screen-reader-only full sentence within the existing atomic status region. ChatGPT also updated the count assertions and added empty/single/multiple-item announcement cases, including a check that the visual duplicate is hidden from the accessibility tree.
 - This was a human-directed refinement to an AI-assisted implementation. The updated wording still needs an NVDA + Chrome recheck; final source review and approval for `main` remain open.
 
+## November 4, 2026 — final human review checkpoint
+
+- After the count refinement was merged through [PR #4](https://github.com/mtburns/component-lab/pull/4), Travis reviewed the source and reported that everything looked good to the best of his abilities. This is his reported overall review, not a claim that AI independently verified his understanding or that each earlier suggested review exercise was separately documented.
+- Travis confirmed the revised NVDA + Chrome result announcement worked after being asked to recheck matching results, zero results, and Clear. The earlier "slash" quotes remain historical observations of the previous version.
+- ChatGPT verified passing promotion PR CI for `b29ef53f95a36db983bf58abeadf579ffc310bb9` and drafted this final documentation update. This round changes only the review record, attribution record, and Storybook explanatory text; it adds no component behavior or tests.
+- Human review and the scoped manual QA are complete. The final merge decision for [PR #2](https://github.com/mtburns/component-lab/pull/2) is separate; this record does not claim that the PR has merged or that a site has deployed. Future portfolio integration requires its own manual change and review.
+
 ## How this helped
 
-AI produced the repetitive project setup, proposed a first API and alternative-data demonstration, and drafted test scenarios and explanations. Travis used that concrete implementation to challenge decisions, extend the example, and perform manual verification. AI also helped organize the resulting evidence and remaining review items. Final source review and approval still belong to Travis; no numerical productivity claim is made.
+AI produced the repetitive project setup, proposed a first API and alternative-data demonstration, and drafted test scenarios and explanations. Travis used that concrete implementation to challenge decisions, extend the example, request a clearer spoken count, and perform manual verification and source review. AI also helped organize the evidence. Travis retains the final merge decision; no numerical productivity claim is made.
 
 ## Record future decisions
 
