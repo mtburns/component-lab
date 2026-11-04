@@ -99,6 +99,16 @@ The collection renders a section; the host page owns its main landmark. Inspect 
 
 None of these results establishes WCAG conformance or final implementation approval. Remaining review items are below.
 
+## November 4, 2026 — reduced motion and result wording refinement
+
+After the checkpoint above, Travis enabled `prefers-reduced-motion: reduce` through Chrome DevTools and confirmed that the requested card/arrow motion stopped and the component still worked. This completes the previously open manual reduced-motion check for that local setup.
+
+Travis then requested that screen readers announce "out of" instead of "slash." ChatGPT retained the compact visual count, such as `3 / 6 items shown`, inside an `aria-hidden` span and added a screen-reader-only sentence, `3 out of 6 items shown`, within the existing atomic status region. The readable sentence is exposed to assistive technology; the visual duplicate is hidden from it.
+
+The earlier NVDA quotes document the pre-change version. Recheck the new wording in NVDA + Chrome for matching results, zero results, and Clear; the previous manual checks do not establish that this refinement has been heard correctly. Search/filter matching and focus behavior were not changed.
+
+Local verification of this refinement: 23 component tests and 10 CI-policy tests passed, along with formatting of the five changed files and the TypeScript/Vite build. New announcement cases cover empty, single-item, and multiple-item collections; existing search/filter assertions now check the readable count wording. This round did not repeat the local Storybook build or manual NVDA check.
+
 ## Current review checklist
 
 - [ ] Walk through the typed API and explain the component's responsibilities.
@@ -110,7 +120,8 @@ None of these results establishes WCAG conformance or final implementation appro
 - [x] Check screen-reader labels, group selection, count announcements, focus restoration, headings, and card-link semantics in Default and Multi Select Labels with NVDA + Chrome.
 - [x] Check 320px reflow and 200% browser zoom locally.
 - [x] Record the scoped rendered contrast results and compiled reduced-motion CSS inspection above.
-- [ ] Perform a manual visual check with reduced motion enabled.
+- [x] Perform a manual visual check with reduced motion enabled in Chrome.
+- [ ] Recheck the updated "out of" result announcement with NVDA + Chrome after search, zero results, and Clear.
 - [x] Record the reported edits, decisions, and local checks in AI_USAGE.md.
 - [x] Configure branch protection on `develop` and `main`; confirm the exposed required-check settings.
 - [ ] Finish human review of the CI-only guard and source/test implementation.

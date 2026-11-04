@@ -92,11 +92,17 @@ export function SearchableCollection<T>({
           aria-atomic="true"
           className="font-mono text-sm text-zinc-600"
         >
-          <span className="font-semibold text-zinc-950">
-            {visibleItems.length}
+          <span aria-hidden="true">
+            <span className="font-semibold text-zinc-950">
+              {visibleItems.length}
+            </span>
+            {' / '}
+            {items.length} {items.length === 1 ? 'item' : 'items'} shown
           </span>
-          {' / '}
-          {items.length} {items.length === 1 ? 'item' : 'items'} shown
+          <span className="sr-only">
+            {visibleItems.length} out of {items.length}{' '}
+            {items.length === 1 ? 'item' : 'items'} shown
+          </span>
         </p>
       </div>
 

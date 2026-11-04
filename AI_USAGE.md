@@ -50,6 +50,12 @@ ChatGPT updated the workflow for `develop`/`main`, removed credential persistenc
 - ChatGPT verified successful GitHub CI on the reviewed baseline and prepared the promotion PR description. The integration could not create the PR, so Travis opened [draft PR #2](https://github.com/mtburns/component-lab/pull/2) from `develop` to `main` himself. No promotion or deployment is recorded by this documentation update.
 - ChatGPT drafted this documentation revision from the actual reports, added the previously scoped browser contrast/scan evidence to docs/REVIEW.md, and updated the Storybook attribution note. This round changes documentation only. Travis's final source/test review, a manual reduced-motion visual check, and approval for `main` remain open.
 
+## November 4, 2026 — reduced motion confirmed and count wording revised
+
+- Travis performed the requested reduced-motion visual check in Chrome DevTools and confirmed it worked. ChatGPT recorded this human observation; it did not perform that manual check.
+- After reviewing NVDA's "slash" announcement, Travis requested "out of" wording. ChatGPT preserved the visible slash count, hid that visual representation from assistive technology, and added a screen-reader-only full sentence within the existing atomic status region. ChatGPT also updated the count assertions and added empty/single/multiple-item announcement cases, including a check that the visual duplicate is hidden from the accessibility tree.
+- This was a human-directed refinement to an AI-assisted implementation. The updated wording still needs an NVDA + Chrome recheck; final source review and approval for `main` remain open.
+
 ## How this helped
 
 AI produced the repetitive project setup, proposed a first API and alternative-data demonstration, and drafted test scenarios and explanations. Travis used that concrete implementation to challenge decisions, extend the example, and perform manual verification. AI also helped organize the resulting evidence and remaining review items. Final source review and approval still belong to Travis; no numerical productivity claim is made.
