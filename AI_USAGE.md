@@ -1,5 +1,7 @@
 # AI collaboration record
 
+Dated entries preserve what was known at each checkpoint. The November 4 entry updates earlier pending testing and branch-protection statuses; final implementation approval remains separate.
+
 ## Working agreement
 
 Travis owns the engineering decisions and final approval. AI can propose approaches, draft code, suggest cases, and help investigate failures. An AI-generated implementation and passing automated checks do not mean human review has happened.
@@ -40,9 +42,17 @@ ChatGPT updated the workflow for `develop`/`main`, removed credential persistenc
 - Travis reported that responsive layout and zoom checks looked good after the requested 320px viewport and 200% browser zoom checks. These are local user-reported observations; no broader browser coverage or screen-reader verification is implied.
 - ChatGPT updated this attribution record and docs/REVIEW.md from those reports. Passing checks and accepted interaction decisions do not constitute final approval for `main`; remaining review items stay open.
 
+## November 4, 2026 — screen-reader QA and promotion preparation
+
+- Travis installed NVDA and performed manual checks in Chrome on the Default and Multi Select Labels stories. He confirmed the search label/role, changing and zero-result announcements, radio labels/positions/selection states, checkbox labels/states and multiple selections, Clear restoring results and search focus, heading hierarchy, and card-link announcements. ChatGPT supplied the test sequence and interpreted Travis's reported observations; it did not operate NVDA or perform those human checks.
+- Travis also ran Lighthouse and reported a score of 98 with a missing-main-landmark finding. The report category, audited URL, and artifact were not recorded. ChatGPT explained page-level landmark ownership and did not change the collection to render a main landmark or claim the finding was fixed.
+- Travis configured protection for `develop` and `main`. ChatGPT verified the exposed protected flags and required **Validate components and CI-only policy** check through GitHub's branch responses; full administrative rule settings were not readable by the connection.
+- ChatGPT verified successful GitHub CI on the reviewed baseline and prepared the promotion PR description. The integration could not create the PR, so Travis opened [draft PR #2](https://github.com/mtburns/component-lab/pull/2) from `develop` to `main` himself. No promotion or deployment is recorded by this documentation update.
+- ChatGPT drafted this documentation revision from the actual reports, added the previously scoped browser contrast/scan evidence to docs/REVIEW.md, and updated the Storybook attribution note. This round changes documentation only. Travis's final source/test review, a manual reduced-motion visual check, and approval for `main` remain open.
+
 ## How this helped
 
-AI produced the repetitive project setup, proposed a first API and alternative-data demonstration, and drafted test scenarios and explanations in one working pass. This gives Travis concrete code to evaluate. The next step is his review, not a claim that the first draft is finished production code.
+AI produced the repetitive project setup, proposed a first API and alternative-data demonstration, and drafted test scenarios and explanations. Travis used that concrete implementation to challenge decisions, extend the example, and perform manual verification. AI also helped organize the resulting evidence and remaining review items. Final source review and approval still belong to Travis; no numerical productivity claim is made.
 
 ## Record future decisions
 
