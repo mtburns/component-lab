@@ -1,6 +1,6 @@
 # Review checkpoint — first slice
 
-Started October 29, 2026; updated November 4, 2026. Dated entries below preserve the review history. The November 4 checkpoint and current checklist supersede earlier pending statuses. Final implementation approval for `main` has not yet been recorded. This repository has no production or staging deployment.
+Started October 29, 2026; updated November 4, 2026. Dated entries below preserve the review history. The final November 4 review checkpoint supersedes earlier pending statuses. Travis has completed the scoped source review and manual QA described here; the merge to `main` remains a separate action. This repository has no production or staging deployment.
 
 ## Automated checks run by ChatGPT
 
@@ -109,22 +109,27 @@ The earlier NVDA quotes document the pre-change version. Recheck the new wording
 
 Local verification of this refinement: 23 component tests and 10 CI-policy tests passed, along with formatting of the five changed files and the TypeScript/Vite build. New announcement cases cover empty, single-item, and multiple-item collections; existing search/filter assertions now check the readable count wording. This round did not repeat the local Storybook build or manual NVDA check.
 
-## Current review checklist
+## November 4, 2026 — final human review checkpoint
 
-- [ ] Walk through the typed API and explain the component's responsibilities.
-- [ ] Inspect the search/category logic, normalization, and stable keys.
-- [ ] Decide whether the card design and visual language feel like your work.
-- [ ] Review each test and identify missing user behavior.
-- [ ] Open every Storybook story and inspect its Docs page.
+Reviewed baseline: `develop` at `b29ef53f95a36db983bf58abeadf579ffc310bb9`, including the count refinement merged through [PR #4](https://github.com/mtburns/component-lab/pull/4).
+
+- Travis reported: "I checked the source and everything looks good to the best of my abilities." This records his overall source review after the component, tests, and CI guard were provided for inspection. It does not claim that he separately documented every earlier suggested review exercise or every Storybook Docs page.
+- In response to the remaining NVDA wording check, Travis confirmed "All good." This completes the requested recheck of matching results, zero results, and Clear with the new "out of" announcement. No verbatim updated speech transcript was supplied.
+- The [promotion PR CI run](https://github.com/mtburns/component-lab/actions/runs/41924412219) passed for this baseline, including the standard Storybook build. This supersedes the earlier local verification note that did not repeat that build.
+- ChatGPT prepared this final documentation update from those reports. Component logic, markup, styling, and tests are unchanged in this documentation round.
+
+### Completed evidence
+
+- [x] Record Travis's overall source review and acceptance of the implementation.
 - [x] Check keyboard focus visibility and tab order manually in the local example.
 - [x] Check screen-reader labels, group selection, count announcements, focus restoration, headings, and card-link semantics in Default and Multi Select Labels with NVDA + Chrome.
 - [x] Check 320px reflow and 200% browser zoom locally.
 - [x] Record the scoped rendered contrast results and compiled reduced-motion CSS inspection above.
 - [x] Perform a manual visual check with reduced motion enabled in Chrome.
-- [ ] Recheck the updated "out of" result announcement with NVDA + Chrome after search, zero results, and Clear.
+- [x] Recheck the updated "out of" result announcement with NVDA + Chrome after search, zero results, and Clear.
 - [x] Record the reported edits, decisions, and local checks in AI_USAGE.md.
 - [x] Configure branch protection on `develop` and `main`; confirm the exposed required-check settings.
-- [ ] Finish human review of the CI-only guard and source/test implementation.
-- [ ] Approve a reviewed version before portfolio integration or presenting it as production-ready work.
 
-Human implementation approval: **not yet recorded**.
+Human source-review checkpoint: **complete, as reported by Travis**. The work is ready for the final promotion PR review and merge decision once the documentation update passes CI.
+
+This is a scoped work-sample review, not a claim of exhaustive testing, universal accessibility, or approval for any future portfolio integration. That integration remains a separate, manually reviewed change. No site deployment is part of this workflow.
