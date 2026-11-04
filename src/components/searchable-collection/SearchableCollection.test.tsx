@@ -38,6 +38,25 @@ const multipleProps: SearchableCollectionProps<Item> = {
 };
 
 describe('SearchableCollection user behavior', () => {
+  it.each([
+    [0, '0 out of 0 items shown'],
+    [1, '1 out of 1 item shown'],
+    [3, '3 out of 3 items shown'],
+  ] as const)(
+    'exposes a readable result announcement for a collection of %i items',
+    (total, announcement) => {
+      render(<SearchableCollection {...props} items={items.slice(0, total)} />);
+      const status = screen.getByRole('status');
+      const spokenCount = within(status).getByText(announcement);
+      expect(spokenCount.closest('[aria-hidden="true"]')).toBeNull();
+      // Keep the compact visual count out of the accessibility tree so the
+      // live region exposes one sentence rather than both representations.
+      expect(status.querySelector('[aria-hidden="true"]')).toHaveTextContent(
+        `${total} / ${total} ${total === 1 ? 'item' : 'items'} shown`,
+      );
+    },
+  );
+
   it.each(['single', 'multiple'] as const)(
     'has no axe-detected structural violations in %s mode',
     async (selection) => {
@@ -81,7 +100,9 @@ describe('SearchableCollection user behavior', () => {
       screen.getByRole('searchbox', { name: 'Search this collection' }),
     ).toHaveValue('');
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByRole('status')).toHaveTextContent('3 / 3 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '3 out of 3 items shown',
+    );
     expect(screen.getByRole('radio', { name: 'All' })).toBeChecked();
   });
 
@@ -107,7 +128,9 @@ describe('SearchableCollection user behavior', () => {
     expect(
       screen.getByRole('heading', { name: 'Component color tokens' }),
     ).toBeVisible();
-    expect(screen.getByRole('status')).toHaveTextContent('1 / 3 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '1 out of 3 items shown',
+    );
   });
 
   it('clears both controls and returns focus to the search field', async () => {
@@ -127,7 +150,9 @@ describe('SearchableCollection user behavior', () => {
     render(<SearchableCollection {...props} />);
     await user.type(screen.getByRole('searchbox'), 'unobtainium');
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('0 / 3 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '0 out of 3 items shown',
+    );
     expect(
       screen.getByText('Nothing found. Plenty left to explore.'),
     ).toBeVisible();
@@ -176,7 +201,9 @@ describe('SearchableCollection user behavior', () => {
       />,
     );
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByRole('status')).toHaveTextContent('3 / 4 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '3 out of 4 items shown',
+    );
   });
 
   it('falls back to all items if the selected category is removed from configuration', async () => {
@@ -227,7 +254,9 @@ describe('SearchableCollection user behavior', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(1);
     await user.click(screen.getByRole('checkbox', { name: 'Design' }));
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
-    expect(screen.getByRole('status')).toHaveTextContent('2 / 3 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '2 out of 3 items shown',
+    );
     expect(screen.getByRole('checkbox', { name: 'Code' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'Design' })).toBeChecked();
     expect(
@@ -257,7 +286,9 @@ describe('SearchableCollection user behavior', () => {
     ).toBeVisible();
     await user.type(screen.getByRole('searchbox'), ' missing');
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('0 / 3 items shown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '0 out of 3 items shown',
+    );
     await user.clear(screen.getByRole('searchbox'));
     await user.type(screen.getByRole('searchbox'), 'color');
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
