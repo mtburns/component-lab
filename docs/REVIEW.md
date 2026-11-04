@@ -1,6 +1,6 @@
 # Review checkpoint — first slice
 
-Recorded October 29, 2026. This is a working draft for Travis to review, not a completed approval for `main`. This repository has no production or staging deployment.
+Started October 29, 2026; updated November 4, 2026. Dated entries below preserve the review history. The November 4 checkpoint and current checklist supersede earlier pending statuses. Final implementation approval for `main` has not yet been recorded. This repository has no production or staging deployment.
 
 ## Automated checks run by ChatGPT
 
@@ -53,7 +53,53 @@ Travis subsequently reported successful local interaction, keyboard, responsive,
 - Considered adding arrow navigation to multi-select labels, then chose to retain native checkbox behavior. Single-select keeps native radio arrow navigation.
 - Confirmed responsive layout and 200% browser zoom looked good after the requested 320px and zoom checks. These are user-reported local checks, not a comprehensive browser or assistive-technology audit.
 
-## Pending review by Travis
+## November 4, 2026 — QA checkpoint before main
+
+Reviewed baseline: `develop` at `7ad8841014d2a319e589f421f7b228f7f354fc6c`, merged through [PR #1](https://github.com/mtburns/component-lab/pull/1). [Draft PR #2](https://github.com/mtburns/component-lab/pull/2) proposes promotion to `main`.
+
+### GitHub CI and branch rules
+
+- The [develop push run](https://github.com/mtburns/component-lab/actions/runs/40914276833) and [promotion PR run](https://github.com/mtburns/component-lab/actions/runs/41919615945) passed for this baseline, including policy validation, formatting, tests, TypeScript/Vite build, and the standard Storybook build without the executor fallback.
+- The multi-select suite recorded above contains 20 component tests and 10 policy tests. The earlier 12-test result describes the initial slice.
+- Travis configured branch protection. GitHub's branch responses confirm that both `develop` and `main` are protected and require **Validate components and CI-only policy**. The connection cannot read the full administrative protection settings, so independent verification is limited to those exposed fields.
+
+### Manual NVDA + Chrome checks reported by Travis
+
+Travis tested the Default and Multi Select Labels stories on Windows with NVDA and Chrome. Exact NVDA and Chrome versions were not recorded.
+
+- Search announced its visible label and editable search-field role.
+- Search changes announced the result count, including "0 slash 6 items shown."
+- Clear reset search and selections, restored results, and returned focus to search.
+- Radios announced their labels, group positions, and selection states.
+- Checkboxes announced their labels and checked/unchecked states. Multiple selections, deselection, count updates, and focus behavior passed the requested checks.
+- Heading navigation followed a sensible hierarchy and announced heading levels.
+- Card links announced distinct titles and level-three heading semantics. Travis reported "list with 6 items, Think in components, link heading level 3" followed by "Make room for change, link heading level 3."
+
+These are human-reported checks of the documented stories and interactions, not AI-operated screen-reader tests or coverage of every assistive technology.
+
+### Additional browser evidence from October 29
+
+On the same multi-select implementation, the Chromium Storybook accessibility panel reported:
+
+| Inspected state                                    | Violations | Passes | Inconclusive |
+| -------------------------------------------------- | ---------- | ------ | ------------ |
+| No selected labels                                 | 0          | 25     | 0            |
+| Design and Development selected, 4 / 6 results     | 0          | 25     | 1            |
+| Same labels with an unmatched query, 0 / 6 results | 0          | 22     | 1            |
+
+The inconclusive color-contrast result concerned two decorative checkmark spans containing non-text characters. Computed-color checks measured approximately 19.89:1 for selected white checkmarks against zinc-950, 10.46:1 for unselected zinc-700 labels against white, 4.83:1 for zinc-500 control borders against white, 4.62:1 for the search border/placeholder against zinc-50, and 7.29:1 for violet-700 focus outlines against white. These are scoped rendered-color measurements, not verification of every possible consumer theme or state.
+
+Compiled CSS inspection placed all seven `motion-safe` rules under `(prefers-reduced-motion: no-preference)`. Reduced motion was not enabled for a manual visual check; that remains open.
+
+### Lighthouse reported by Travis
+
+Travis reported a score of 98 and one finding, "Document does not have a main landmark." The exact category, audited URL, and report artifact were not recorded. Preserve this as a user-reported observation rather than a reproducible score claim.
+
+The collection renders a section; the host page owns its main landmark. Inspect the audited page before deciding whether its demo or Storybook wrapper needs an adjustment. No main landmark was added to the reusable component, and no Lighthouse finding is claimed as fixed.
+
+None of these results establishes WCAG conformance or final implementation approval. Remaining review items are below.
+
+## Current review checklist
 
 - [ ] Walk through the typed API and explain the component's responsibilities.
 - [ ] Inspect the search/category logic, normalization, and stable keys.
@@ -61,11 +107,13 @@ Travis subsequently reported successful local interaction, keyboard, responsive,
 - [ ] Review each test and identify missing user behavior.
 - [ ] Open every Storybook story and inspect its Docs page.
 - [x] Check keyboard focus visibility and tab order manually in the local example.
-- [ ] Check screen-reader labels, group selection, and count announcements.
+- [x] Check screen-reader labels, group selection, count announcements, focus restoration, headings, and card-link semantics in Default and Multi Select Labels with NVDA + Chrome.
 - [x] Check 320px reflow and 200% browser zoom locally.
-- [ ] Verify color contrast and reduced motion.
+- [x] Record the scoped rendered contrast results and compiled reduced-motion CSS inspection above.
+- [ ] Perform a manual visual check with reduced motion enabled.
 - [x] Record the reported edits, decisions, and local checks in AI_USAGE.md.
-- [ ] Review the CI-only guard and configure required GitHub checks on `develop` and `main` once available.
+- [x] Configure branch protection on `develop` and `main`; confirm the exposed required-check settings.
+- [ ] Finish human review of the CI-only guard and source/test implementation.
 - [ ] Approve a reviewed version before portfolio integration or presenting it as production-ready work.
 
 Human implementation approval: **not yet recorded**.
