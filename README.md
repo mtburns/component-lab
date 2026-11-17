@@ -2,7 +2,7 @@
 
 Reusable frontend components by Travis Burns, with interactive examples and the reasoning behind the code. React, TypeScript, Tailwind CSS, and Storybook.
 
-**Status:** first working draft. Travis selected the direction and stack; his implementation review is ongoing and approval for `main` is pending. See [AI usage](AI_USAGE.md) and the [review checklist](docs/REVIEW.md).
+**Status:** the first component, Searchable Collection, has completed Travis's source review and scoped manual QA and was merged into `main` on November 4, 2026, through [PR #2](https://github.com/mtburns/component-lab/pull/2). Review included keyboard interaction, NVDA + Chrome, responsive layout and zoom, reduced motion, and the revised result-count announcements. Automated checks passed for the merged work. Component Lab remains an ongoing personal project; these checks are evidence for this work sample, not a WCAG conformance certification. See [AI usage](AI_USAGE.md) and the [review checklist](docs/REVIEW.md) for the decisions, evidence, and limitations.
 
 **CI only.** This repository has no production or staging server and must never deploy to the portfolio's hosting. `main` holds reviewed examples; it is not a deployment trigger. Portfolio integration is a separate, manual change in the portfolio repository.
 
@@ -70,6 +70,6 @@ The downloadable archive omits Git metadata. No open-source license has been sel
 
 Manually copy selected, reviewed component source into a feature branch in the portfolio repository and supply project data/card markup there. The portfolio's own review and deployment process applies only to that separate change. This repo never triggers it, dispatches to it, or shares its hosting credentials.
 
-The component uses React hooks and includes a `use client` boundary for Next.js. Include its source in the consuming Tailwind build's scanned files. This draft is not an npm package; the package stays private to prevent accidental publication.
+The component uses React hooks and includes a `use client` boundary for Next.js. Include its source in the consuming Tailwind build's scanned files. This project is not distributed as an npm package; the package stays private to prevent accidental publication.
 
 Neither the existing portfolio nor its deployment has been changed.
